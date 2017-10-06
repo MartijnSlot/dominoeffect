@@ -1,13 +1,13 @@
 import Data.Char
 import Data.List
 import System.IO
+import Data.Maybe
 
-type Pip      = Int
-type Bone     = (Int, Int)
-type Pos      = (Int, Int)
-type BoneLoc  = (Pos, Pos)
-type Row      = [Pip]
-type Grid     = [Row]
+type Bone               = (Int, Int)
+type Pos                = (Int, Int)
+type GridBoneLocations  = [(Pos, Pos, Int, Int)]
+type Row                = [Int]
+type Grid               = [Row]
 
 cls :: IO ()
 cls = putStr "\ESC[2J"
@@ -18,8 +18,8 @@ width = 8
 height :: Int
 height = 7
 
-startingBoard1 :: Grid
-startingBoard1 = [row1, row2, row3, row4, row5, row6, row7]
+board1 :: Grid
+board1 = [row1, row2, row3, row4, row5, row6, row7]
                  where
                     row1 = [5,4,3,6,5,3,4,6]
                     row2 = [0,6,0,1,2,3,1,1]
@@ -53,7 +53,13 @@ interleave x [] = []
 interleave x [y] = [y]
 interleave x (y:ys) = y : x : interleave x ys
 
-solutionSpace :: [BoneLocation]
-solutionSpace board = map rowPairs board
+solutionSpace :: Grid -> GridBoneLocations
+solutionSpace = concat . map (rowPairs n | n <- [1..length board1 + 1])
 
-rowPairs :: Row -> [BoneLocation]
+rowPairs :: Int -> Row -> GridBoneLocations
+rowPairs _ []       = []
+rowPairs _ [x]      = []
+rowPairs n (x:y:xs) = ((n, indexX (x:y:xs)), (n, indexY (x:y:xs)), x , y) : rowPairs n (y:xs)
+                      where
+                         indexX xs = 9 - length xs
+                         indexY xs = 10 - length xs
