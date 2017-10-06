@@ -54,27 +54,30 @@ interleave x [y] = [y]
 interleave x (y:ys) = y : x : interleave x ys
 
 solutionSpace :: Grid -> GridBoneLocations
-solutionSpace board = (solutionSubSpace board) ++ (solutionSubSpace (transpose board))
+solutionSpace board = (solutionSubSpace True board) ++ (solutionSubSpace False (transpose board))
 
-solutionSubSpace :: Grid -> GridBoneLocations
-solutionSubSpace = concat . map handleRow
+solutionSubSpace :: Bool -> Grid -> GridBoneLocations
+solutionSubSpace rows | rows      = concat . map (handleRow True)
+                      | otherwise = concat . map (handleRow False)
 
-handleRow :: Row -> GridBoneLocations
-handleRow row = makePairs n xs
+handleRow :: Bool -> Row -> GridBoneLocations
+handleRow rows row = makePairs rows n xs
             where 
                n  = head row
                xs = tail row
-
---TODO fix row, col -> col, row
                 
-makePairs :: Int -> Row -> GridBoneLocations
-makePairs n []          = []
-makePairs n [x]         = []
-makePairs 0 _           = []
-makePairs n (x:y:xs)    = ((n, indexX (x:y:xs)), (n, indexY (x:y:xs)), x , y) : makePairs n (y:xs)
+makePairs :: Bool -> Int -> Row -> GridBoneLocations
+makePairs _ n []           = []
+makePairs _ n [x]          = []
+makePairs _ 0 _            = []
+makePairs True n (x:y:xs)  = ((n, indexX (x:y:xs)), (n, indexY (x:y:xs)), x , y) : makePairs True n (y:xs)
                              where
                                 indexX xs = 9 - length xs
                                 indexY xs = 10 - length xs
+makePairs False n (x:y:xs) = ((indexX (x:y:xs), n), (indexY (x:y:xs), n), x , y) : makePairs False n (y:xs)
+                             where
+                                indexX xs = 8 - length xs
+                                indexY xs = 9 - length xs
 
 transposeBoard :: Grid -> Grid
 transposeBoard board = tail (transpose board)
