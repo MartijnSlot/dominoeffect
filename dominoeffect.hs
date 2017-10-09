@@ -77,24 +77,19 @@ matchTuples (a,b) x | getBone x == (a,b) = Just x
 getBone :: GridBoneLocation -> Bone
 getBone (_,_,(a,b)) = (a,b)
 
-getBone' :: GridBoneLocation -> Bone
-getBone' (_,_,(a,b)) = (b,a)
-
-allBones :: [GridBoneLocation] ->[Bone]
-allBones = map getBone
-
-getPos' :: GridBoneLocation -> [Pos]
-getPos' (a,b,c) = [a,b]
-
-getBonesWith1Location :: [GridBoneLocation] -> [Bone]
-getBonesWith1Location locations = [bones !! x | x <- xs]
+getBonesWith1Location :: [GridBoneLocation] -> [Bone] -> [Bone]
+getBonesWith1Location locations bonez = [bonez !! x | x <- xs]
                         where 
-                           xs = findIndices (==1) (map (countBonePossibilities locations) bones)
+                           xs = findIndices (==1) (map (countBonePossibilities locations) bonez)
 
-filledLocations :: [Bone] -> [GridBoneLocation]
-filledLocations = concat . map (matchBoneToLocations solutionSpace)
+filledLocations :: [GridBoneLocation] -> [GridBoneLocation]
+filledLocations = concat . map (matchBoneToLocations solutionSpace) . getBonesWith1Location bonez
+                  where
+                     bonez = bones --used bones!
 
-
+-- make function that subtracts the filledLocations from solutionSpace
+-- make function that subtracts the used bones from total bones
+-- and then checks new getBonesWith1Locations new Locations
 
 --IO GEBEUREN
 
