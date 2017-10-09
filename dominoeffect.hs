@@ -1,12 +1,11 @@
 import Data.Char
 import Data.List
 import System.IO
--- import Data.Tuple.Select
-
+import Data.Maybe
 
 type Bone               = (Int, Int)
 type Pos                = (Int, Int)
-type GridBoneLocation   = (Pos, Pos, Int, Int)
+type GridBoneLocation   = (Pos, Pos, Bone)
 type Row                = [Int]
 type Grid               = [Row]
 
@@ -31,9 +30,12 @@ board1 = [row0, row1, row2, row3, row4, row5, row6, row7]
                     row6 = [6,5,2,2,4,4,1,6,5]
                     row7 = [7,5,5,3,6,1,2,3,1]
 
+bones :: [Bone]
+bones = [(x,y) | x <- [0..6], y <- [x..6]]
 
 solutionSpace :: Grid -> [GridBoneLocation]
-solutionSpace board = (solutionSubSpace True board) ++ (solutionSubSpace False (transpose board))
+solutionSpace board = do (solutionSubSpace True board) ++ (solutionSubSpace False (transpose board))
+                         --remove positions for bones with 1 location
 
 solutionSubSpace :: Bool -> Grid -> [GridBoneLocation]
 solutionSubSpace rows | rows      = concat . map (handlePairing rows)
@@ -45,15 +47,17 @@ handlePairing rows row = makePairs rows n xs
                             n  = head row
                             xs = tail row
                 
+-- function to pair up 2 positions and pips in a list of possible bone locations on the grid
+-- True signifies pairing of rows, False signifies pairing of (transposed) columns
 makePairs :: Bool -> Int -> Row -> [GridBoneLocation]
 makePairs _ n []           = []
 makePairs _ n [x]          = []
 makePairs _ 0 _            = []
-makePairs True n (x:y:xs)  = ((n, indexX (x:y:xs)), (n, indexY (x:y:xs)), x , y) : makePairs True n (y:xs)
+makePairs True n (x:y:xs)  = ((n, indexX (x:y:xs)), (n, indexY (x:y:xs)), (x,y)) : makePairs True n (y:xs)
                              where
                                 indexX xs = (width + 1) - length xs
                                 indexY xs = (width + 2) - length xs
-makePairs False n (x:y:xs) = ((indexX (x:y:xs), n), (indexY (x:y:xs), n), x , y) : makePairs False n (y:xs)
+makePairs False n (x:y:xs) = ((indexX (x:y:xs), n), (indexY (x:y:xs), n), (x,y)) : makePairs False n (y:xs)
                              where
                                 indexX xs = (height + 1) - length xs
                                 indexY xs = (height + 2) - length xs
@@ -61,20 +65,28 @@ makePairs False n (x:y:xs) = ((indexX (x:y:xs), n), (indexY (x:y:xs), n), x , y)
 transposeBoard :: Grid -> Grid
 transposeBoard board = tail (transpose board) -- tail to remove header column
 
-matchBoneToLocations :: Bone -> [GridBoneLocation] -> Int -- check possiblities for a bone
-matchBoneToLocations _ []         = 0
-matchBoneToLocations (a,b) (x:xs) = filter (==True) (matchTuples a b x : matchBoneToLocations (a,b) xs) --length?
+countBonePossibilities :: Bone -> Int
+countBonePossibilities bone = length (catMaybes (matchBoneToLocations bone (solutionSpace board1))) --HARDCODED board!
 
-matchTuples :: Int -> Int -> GridBoneLocation -> Bool
-matchTuples a b x | getPipsFromLocation x == (a,b) = True
-                  | getPipsFromLocation x == (b,a) = True
-                  | otherwise = False
+matchBoneToLocations :: Bone -> [GridBoneLocation] -> [Maybe GridBoneLocation] -- check locations for a bone
+matchBoneToLocations _ []         = []
+matchBoneToLocations (a,b) (x:xs) = matchTuples a b x : matchBoneToLocations (a,b) xs
 
-getPipsFromLocation :: GridBoneLocation -> (Int,Int)
-getPipsFromLocation (_,_,a,b) = (a,b)
+matchTuples :: Int -> Int -> GridBoneLocation -> Maybe GridBoneLocation
+matchTuples a b x | getPipsFromLocation x == (a,b) = Just x
+                  | getPipsFromLocation x == (b,a) = Just x
+                  | otherwise = Nothing
 
-neighbours :: GridBoneLocation -> [GridBoneLocation]
-neighbours gridboneloc = [gridboneloc, gridboneloc]
+getPipsFromLocation :: GridBoneLocation -> Bone
+getPipsFromLocation (_,_,(a,b)) = (a,b)
+
+getPosFromBones :: GridBoneLocation -> [Pos]
+getPosFromLocation (a,b,_) = [a, b]
+
+getBonesWith1Location :: [Bone]
+getBonesWith1Location = [bones !! x | x <- xs]
+                        where 
+                           xs = findIndices (==1) (map countBonePossibilities bones)
 
 --IO GEBEUREN
 
