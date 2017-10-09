@@ -33,8 +33,8 @@ board1 = [row0, row1, row2, row3, row4, row5, row6, row7]
 bones :: [Bone]
 bones = [(x,y) | x <- [0..6], y <- [x..6]]
 
-solutionSpace :: Grid -> [GridBoneLocation]
-solutionSpace board = do (solutionSubSpace True board) ++ (solutionSubSpace False (transpose board))
+solutionSpace :: [GridBoneLocation]
+solutionSpace = do (solutionSubSpace True board1) ++ (solutionSubSpace False (transpose board1))
                          --remove positions for bones with 1 location
 
 solutionSubSpace :: Bool -> Grid -> [GridBoneLocation]
@@ -62,31 +62,39 @@ makePairs False n (x:y:xs) = ((indexX (x:y:xs), n), (indexY (x:y:xs), n), (x,y))
                                 indexX xs = (height + 1) - length xs
                                 indexY xs = (height + 2) - length xs
 
-transposeBoard :: Grid -> Grid
-transposeBoard board = tail (transpose board) -- tail to remove header column
+countBonePossibilities :: [GridBoneLocation] -> Bone -> Int
+countBonePossibilities locations bone = length (matchBoneToLocations locations bone) --HARDCODED board!
 
-countBonePossibilities :: Bone -> Int
-countBonePossibilities bone = length (catMaybes (matchBoneToLocations bone (solutionSpace board1))) --HARDCODED board!
+matchBoneToLocations :: [GridBoneLocation] -> Bone -> [GridBoneLocation] -- check locations for a bone
+matchBoneToLocations [] _ = []
+matchBoneToLocations xs a = catMaybes (map (matchTuples a) xs)
 
-matchBoneToLocations :: Bone -> [GridBoneLocation] -> [Maybe GridBoneLocation] -- check locations for a bone
-matchBoneToLocations _ []         = []
-matchBoneToLocations (a,b) (x:xs) = matchTuples a b x : matchBoneToLocations (a,b) xs
+matchTuples :: Bone -> GridBoneLocation -> Maybe GridBoneLocation
+matchTuples (a,b) x | getBone x == (a,b) = Just x
+                    | getBone x == (b,a) = Just x
+                    | otherwise = Nothing
 
-matchTuples :: Int -> Int -> GridBoneLocation -> Maybe GridBoneLocation
-matchTuples a b x | getPipsFromLocation x == (a,b) = Just x
-                  | getPipsFromLocation x == (b,a) = Just x
-                  | otherwise = Nothing
+getBone :: GridBoneLocation -> Bone
+getBone (_,_,(a,b)) = (a,b)
 
-getPipsFromLocation :: GridBoneLocation -> Bone
-getPipsFromLocation (_,_,(a,b)) = (a,b)
+getBone' :: GridBoneLocation -> Bone
+getBone' (_,_,(a,b)) = (b,a)
 
-getPosFromBones :: GridBoneLocation -> [Pos]
-getPosFromLocation (a,b,_) = [a, b]
+allBones :: [GridBoneLocation] ->[Bone]
+allBones = map getBone
 
-getBonesWith1Location :: [Bone]
-getBonesWith1Location = [bones !! x | x <- xs]
+getPos' :: GridBoneLocation -> [Pos]
+getPos' (a,b,c) = [a,b]
+
+getBonesWith1Location :: [GridBoneLocation] -> [Bone]
+getBonesWith1Location locations = [bones !! x | x <- xs]
                         where 
-                           xs = findIndices (==1) (map countBonePossibilities bones)
+                           xs = findIndices (==1) (map (countBonePossibilities locations) bones)
+
+filledLocations :: [Bone] -> [GridBoneLocation]
+filledLocations = concat . map (matchBoneToLocations solutionSpace)
+
+
 
 --IO GEBEUREN
 
@@ -113,3 +121,4 @@ interleave :: a -> [a] -> [a]
 interleave x [] = []
 interleave x [y] = [y]
 interleave x (y:ys) = y : x : interleave x ys
+-- 
