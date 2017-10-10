@@ -82,13 +82,40 @@ getBonesWith1Location locations unusedBones = [unusedBones !! x | x <- xs]
                         where 
                            xs = findIndices (==1) (map (countBonePossibilities locations) unusedBones)
 
+getBonesWith2Locations :: [GridBoneLocation] -> [Bone] -> [Bone]
+getBonesWith2Locations locations unusedBones = [unusedBones !! x | x <- xs]
+                        where 
+                           xs = findIndices (==2) (map (countBonePossibilities locations) unusedBones)
+
+getBonesWith3Locations :: [GridBoneLocation] -> [Bone] -> [Bone]
+getBonesWith3Locations locations unusedBones = [unusedBones !! x | x <- xs]
+                        where 
+                           xs = findIndices (==3) (map (countBonePossibilities locations) unusedBones)
+
 filledLocations :: [GridBoneLocation] -> [Bone] -> [GridBoneLocation]
 filledLocations locations = concat . map (matchBoneToLocations locations) . getBonesWith1Location locations
 
+emptyLocations :: [GridBoneLocation] -> [GridBoneLocation] -> [GridBoneLocation]
+emptyLocations currentSolutionSpace filledSpace = (currentSolutionSpace \\ filledSpace)
 
--- make function that subtracts the filledLocations from solutionSpace
--- make function that subtracts the used bones from total bones
--- and then checks new getBonesWith1Locations new Locations
+unusedBones :: [Bone] -> [Bone] -> [Bone]
+unusedBones currentBones usedBones = (currentBones \\ usedBones)
+
+solve :: [GridBoneLocation] -> [Bone] -> [GridBoneLocation]
+solve [] _  = []
+solve _ []  = []
+solve [x] _ = []
+solve _ [x] = []
+solve xs ys = solve (emptyLocs) (remainingBones)
+              where
+                 remainingBones | length (getBonesWith1Location emptyLocs ys) /= 0  = unusedBones ys (getBonesWith1Location emptyLocs ys)
+                                | length (getBonesWith2Locations emptyLocs ys) /= 0 = unusedBones ys (getBonesWith2Locations emptyLocs ys)
+                                | otherwise                                         = unusedBones ys (getBonesWith3Locations emptyLocs ys)
+                 emptyLocs      = emptyLocations xs locations
+                 locations      = filledLocations xs ys
+
+solved :: String -> IO()
+solved a = do putStrLn a
 
 --IO GEBEUREN
 
