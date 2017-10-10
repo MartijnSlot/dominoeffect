@@ -78,14 +78,13 @@ getBone :: GridBoneLocation -> Bone
 getBone (_,_,(a,b)) = (a,b)
 
 getBonesWith1Location :: [GridBoneLocation] -> [Bone] -> [Bone]
-getBonesWith1Location locations bonez = [bonez !! x | x <- xs]
+getBonesWith1Location locations unusedBones = [unusedBones !! x | x <- xs]
                         where 
-                           xs = findIndices (==1) (map (countBonePossibilities locations) bonez)
+                           xs = findIndices (==1) (map (countBonePossibilities locations) unusedBones)
 
-filledLocations :: [GridBoneLocation] -> [GridBoneLocation]
-filledLocations = concat . map (matchBoneToLocations solutionSpace) . getBonesWith1Location bonez
-                  where
-                     bonez = bones --used bones!
+filledLocations :: [GridBoneLocation] -> [Bone] -> [GridBoneLocation]
+filledLocations locations = concat . map (matchBoneToLocations locations) . getBonesWith1Location locations
+
 
 -- make function that subtracts the filledLocations from solutionSpace
 -- make function that subtracts the used bones from total bones
