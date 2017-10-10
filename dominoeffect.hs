@@ -104,9 +104,7 @@ unusedBones currentBones usedBones = (currentBones \\ usedBones)
 solve :: [GridBoneLocation] -> [Bone] -> [GridBoneLocation]
 solve [] _  = []
 solve _ []  = []
-solve [x] _ = []
-solve _ [x] = []
-solve xs ys = solve (emptyLocs) (remainingBones)
+solve xs ys = if xs /= emptyLocs then solve (emptyLocs) (remainingBones) else [] --return up in the tree!
               where
                  remainingBones | length (getBonesWith1Location emptyLocs ys) /= 0  = unusedBones ys (getBonesWith1Location emptyLocs ys)
                                 | length (getBonesWith2Locations emptyLocs ys) /= 0 = unusedBones ys (getBonesWith2Locations emptyLocs ys)
@@ -114,29 +112,21 @@ solve xs ys = solve (emptyLocs) (remainingBones)
                  emptyLocs      = emptyLocations xs locations
                  locations      = filledLocations xs ys
 
-solved :: String -> IO()
-solved a = do putStrLn a
-
 --IO GEBEUREN
 
 putGrid :: Grid -> IO()
-putGrid = putStrLn . unlines . concat . map showRow
+putGrid = putStrLn . insert17CharNewLine . concat . concat . map showRow
           -- where
           --    bar = [replicate ((width * 4) - 1) ' ']
 
 showRow :: [Int] -> [String]
-showRow = interleave space . map show 
+showRow = interleave space . map show
           where
              space = " "
 
-showInt :: Int -> [String]
-showInt 0 = ["   ", " 0 ", "   "]
-showInt 1 = ["   ", " 1 ", "   "]
-showInt 2 = ["   ", " 2 ", "   "]
-showInt 3 = ["   ", " 3 ", "   "]
-showInt 4 = ["   ", " 4 ", "   "]
-showInt 5 = ["   ", " 5 ", "   "]
-showInt 6 = ["   ", " 6 ", "   "]
+insert17CharNewLine :: [Char] -> [Char]
+insert17CharNewLine xs | length xs < 8 = xs
+                      | otherwise     = take 17 xs ++ "\n" ++ insert17CharNewLine (drop 17 xs)
 
 interleave :: a -> [a] -> [a]
 interleave x [] = []
