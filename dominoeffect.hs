@@ -1,9 +1,8 @@
 import Data.Char
-import Data.List
-import System.IO
+
 import Data.Maybe
 
-type Bone               = (Int, Int)
+type Bone               = (Int, Int) --TODO add stone number (eventually for printing)
 type Pos                = (Int, Int)
 type GridBoneLocation   = (Pos, Pos, Bone)
 type Row                = [Int]
@@ -33,8 +32,8 @@ board1 = [row0, row1, row2, row3, row4, row5, row6, row7]
 bones :: [Bone]
 bones = [(x,y) | x <- [0..6], y <- [x..6]]
 
-solutionSpace :: [GridBoneLocation]
-solutionSpace = do (solutionSubSpace True board1) ++ (solutionSubSpace False (transpose board1))
+solutionSpace :: Grid -> [GridBoneLocation]
+solutionSpace board = do (solutionSubSpace True board) ++ (solutionSubSpace False (transpose board))
                          --remove positions for bones with 1 location
 
 solutionSubSpace :: Bool -> Grid -> [GridBoneLocation]
@@ -74,6 +73,22 @@ matchTuples (a,b) x | getBone x == (a,b) = Just x
                     | getBone x == (b,a) = Just x
                     | otherwise = Nothing
 
+data Tree a = Node a [Tree a] deriving Show
+
+treeSome :: [GridBoneLocation] -> [Bone] -> Tree [GridBoneLocation]
+treeSome g b = Node g [treeSome (emptyLocations g (filledLocations g b)) (remainingBones g b)]
+
+remainingBones :: [GridBoneLocation] -> [Bone] -> [Bone]
+remainingBones xs ys | length (getBonesWith1Location xs ys) /= 0  = unusedBones ys (getBonesWith1Location xs ys)
+                     | length (getBonesWith2Locations xs ys) /= 0 = unusedBones ys (getBonesWith2Locations xs ys)
+                     | otherwise                                  = unusedBones ys (getBonesWith3Locations xs ys)
+
+filledLocations :: [GridBoneLocation] -> [Bone] -> [GridBoneLocation]
+filledLocations locations = concat . map (matchBoneToLocations locations) . remainingBones locations
+
+emptyLocations :: [GridBoneLocation] -> [GridBoneLocation] -> [GridBoneLocation]
+emptyLocations currentSolutionSpace filledSpace = (currentSolutionSpace \\ filledSpace)
+
 getBone :: GridBoneLocation -> Bone
 getBone (_,_,(a,b)) = (a,b)
 
@@ -92,32 +107,29 @@ getBonesWith3Locations locations unusedBones = [unusedBones !! x | x <- xs]
                         where 
                            xs = findIndices (==3) (map (countBonePossibilities locations) unusedBones)
 
-filledLocations :: [GridBoneLocation] -> [Bone] -> [GridBoneLocation]
-filledLocations locations = concat . map (matchBoneToLocations locations) . getBonesWith1Location locations
-
-emptyLocations :: [GridBoneLocation] -> [GridBoneLocation] -> [GridBoneLocation]
-emptyLocations currentSolutionSpace filledSpace = (currentSolutionSpace \\ filledSpace)
-
 unusedBones :: [Bone] -> [Bone] -> [Bone]
 unusedBones currentBones usedBones = (currentBones \\ usedBones)
 
-solve :: [GridBoneLocation] -> [Bone] -> [GridBoneLocation]
-solve [] _  = []
-solve _ []  = []
-solve xs ys = if xs /= emptyLocs then solve (emptyLocs) (remainingBones) else [] --return up in the tree!
-              where
-                 remainingBones | length (getBonesWith1Location emptyLocs ys) /= 0  = unusedBones ys (getBonesWith1Location emptyLocs ys)
-                                | length (getBonesWith2Locations emptyLocs ys) /= 0 = unusedBones ys (getBonesWith2Locations emptyLocs ys)
-                                | otherwise                                         = unusedBones ys (getBonesWith3Locations emptyLocs ys)
-                 emptyLocs      = emptyLocations xs locations
-                 locations      = filledLocations xs ys
+solve :: Grid -> IO ()
+solve g = do cls
+             putGrid g
+             solve' (solutionSpace g) bones
+
+solve' :: [GridBoneLocation] -> [Bone] -> IO ()
+solve' g b | length b == 0 = putStr "gesolved ouwe!\n"
+           | otherwise     = solve' newBoard newBones
+                         where
+                            newBoard = emptyLocations g (filledLocations g b)
+                            newBones = remainingBones g b
+
+main :: IO ()
+main = do hSetBuffering stdout NoBuffering -- disable buffering, necessary to do some tricks
+          solve board1
 
 --IO GEBEUREN
 
 putGrid :: Grid -> IO()
 putGrid = putStrLn . insert17CharNewLine . concat . concat . map showRow
-          -- where
-          --    bar = [replicate ((width * 4) - 1) ' ']
 
 showRow :: [Int] -> [String]
 showRow = interleave space . map show
