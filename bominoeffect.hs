@@ -10,31 +10,25 @@ cls :: IO ()
 cls = putStr "\ESC[2J"
 
 width :: Int
-width = 2
+width = 8
 
 height :: Int
-height = 2
+height = 7
 
--- inputboard :: [Int]
--- inputboard = [5,4,3,6,5,3,4,6,0,6,0,1,2,3,1,1,3,2,6,5,0,4,2,0,5,3,6,2,3,2,0,6,4,0,4,1,0,0,4,1,5,2,2,4,4,1,6,5,5,5,3,6,1,2,3,1]
+inp :: [Int]
+inp = [5,4,3,6,5,3,4,6,0,6,0,1,2,3,1,1,3,2,6,5,0,4,2,0,5,3,6,2,3,2,0,6,4,0,4,1,0,0,4,1,5,2,2,4,4,1,6,5,5,5,3,6,1,2,3,1]
 
--- resultboard :: [Int]
--- resultboard = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+out :: [Int]
+out = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
-bones :: [Bone]
-bones = [((0,0),1), ((1,1),8), ((2,3),15), ((3,6),22),
-         ((0,1),2), ((1,2),9), ((2,4),16), ((4,4),23),
-         ((0,2),3), ((1,3),10), ((2,5),17), ((4,5),24),
-         ((0,3),4), ((1,4),11), ((2,6),18), ((4,6),25),
-         ((0,4),5), ((1,5),12), ((3,3),19), ((5,5),26),
-         ((0,5),6), ((1,6),13), ((3,4),20), ((5,6),27),
-         ((0,6),7), ((2,2),14), ((3,5),21), ((6,6),28)]
-
-inputboard :: [Int]
-inputboard = [0,1,0,0]
-
-resultboard :: [Int]
-resultboard = [0,0,0,0]
+st :: [Bone]
+st = [((0,0),1), ((1,1),8), ((2,3),15), ((3,6),22),
+      ((0,1),2), ((1,2),9), ((2,4),16), ((4,4),23),
+      ((0,2),3), ((1,3),10), ((2,5),17), ((4,5),24),
+      ((0,3),4), ((1,4),11), ((2,6),18), ((4,6),25),
+      ((0,4),5), ((1,5),12), ((3,3),19), ((5,5),26),
+      ((0,5),6), ((1,6),13), ((3,4),20), ((5,6),27),
+      ((0,6),7), ((2,2),14), ((3,5),21), ((6,6),28)]
 
 findFree :: [Int] -> Int -- find next free spot on resultmatrix
 findFree = findFree' 0
@@ -70,7 +64,7 @@ replaceBone index newVal (x:xs) | index == 0 = newVal:xs
 
 moves :: Int -> [Int] -> [(Int,Int)] -- get all moves for a position (side/bottom of board)
 moves n xs | (n + 1) `mod` width == 0            = [(n, (n + width))]
-           | (n + 1) `div` width == (height + 1) = [(n, (n + 1))]
+           | (n + 1) + width >= length xs        = [(n, (n + 1))]
            | otherwise                           = [(n, (n + 1)), (n, (n + width))]
 
 chop :: Int -> [a] -> [[a]] --for visual representation
@@ -78,7 +72,7 @@ chop n [] = []
 chop n xs = take n xs : chop n (drop n xs)
 
 solve :: [Int] -> [Int] -> [Bone] -> [Int]
-solve inp out []                    = out
+solve inp out []                                       = out
 solve inp out st  | boneValue1 /= 0 && boneValue2 /= 0 = solve inp replace1 (removeBone boneValue1 st) ++ solve inp replace2 (removeBone boneValue2 st)
                   | boneValue1 /= 0                    = solve inp replace1 (removeBone boneValue1 st)
                   | otherwise                          = []
