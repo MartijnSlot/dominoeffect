@@ -63,7 +63,8 @@ matchBone (a,b) ((p,q),_) = (a == p && b == q) || (a == q && b == p)
 matchBoneValue :: Int -> Bone -> Bool -- matches an int to a bone
 matchBoneValue n ((_,_),p) = n == p
 
-
+getValue :: (Int, Int) -> [Int] -> (Int, Int)
+getValue (a,b) xs = ((xs !! a), (xs !! b))
 
 getBoneValue :: Bone -> Int
 getBoneValue ((a,b),c) = c
@@ -92,8 +93,8 @@ solve inp out st  | boneValue1 /= 0 = solve inp (replace1) (removeBone boneValue
                   where
                      replace1   = replaceBone (snd (freemoves !! 0)) boneValue1 (replaceBone (fst (freemoves !! 0)) boneValue1 out)
                      replace2   = replaceBone (snd (freemoves !! 1)) boneValue2 (replaceBone (fst (freemoves !! 1)) boneValue2 out) 
-                     boneValue1 = findBoneValue (freemoves !! 0) st
-                     boneValue2 = findBoneValue (freemoves !! 1) st
+                     boneValue1 = findBoneValue (getValue (freemoves !! 0) inp) st
+                     boneValue2 = findBoneValue (getValue (freemoves !! 1) inp) st
                      freemoves  = moves (findFree out) out
 
 --IO GEBEUREN
