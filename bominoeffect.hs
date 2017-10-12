@@ -1,7 +1,6 @@
 import Data.List
 import Data.Maybe
 import System.IO
-import Control.Monad
 
 type Bone               = ((Int, Int), Int)
 type Grid               = [[Int]]
@@ -13,7 +12,7 @@ width :: Int
 width = 8
 
 inp :: [Int]
-inp = [5,4,3,6,5,3,4,6,0,6,0,1,2,3,1,1,3,2,6,5,0,4,2,0,5,3,6,2,3,2,0,6,4,0,4,1,0,0,4,1,5,2,2,4,4,1,6,5,5,5,3,6,1,2,3,1]
+inp = [4,2,5,2,6,3,5,4,5,0,4,3,1,4,1,1,1,2,3,0,2,2,2,2,1,4,0,1,3,5,6,5,4,0,6,0,3,6,6,5,4,0,1,6,4,0,3,0,6,5,3,6,2,1,5,3]
 
 out :: [Int]
 out = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -26,16 +25,6 @@ st = [((0,0),1), ((0,1),2), ((0,2),3), ((0,3),4), ((0,4),5), ((0,5),6), ((0,6),7
       ((4,4),23), ((4,5),24), ((4,6),25), 
       ((5,5),26), ((5,6),27), 
       ((6,6),28)]
-
--- inp :: [Int]
--- inp = [0,2,1,1,2,2,2,2,0,0,1,0,1,2,3,4]
-
--- out :: [Int]
--- out = [1,2,3,4,5,6,0,0,1,2,3,4,5,6,0,0]
-
--- st :: [Bone]
--- st = [((2,3),7), ((2,4),8)]
--- -- , ((2,5),9)]
 
 findFree :: [Int] -> Int -- find next free spot on resultmatrix
 findFree = findFree' 0
@@ -84,7 +73,7 @@ solve inp out st  | boneValue1 /= 0 && boneValue2 /= 0 = solve inp replace1 (rem
                      boneValue2 = if length freemoves < 2 then 0 else findBoneValue (getValue (last freemoves) inp) st
                      freemoves  = moves (findFree out) out
 
-solver :: [[Int]]
+solver :: Grid
 solver = chop (length out) (solve inp out st)
 
 --IO GEBEUREN
