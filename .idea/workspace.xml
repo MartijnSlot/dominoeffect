@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a2ac0896-e97a-49b8-b63e-ae63a4b2560c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Field.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bominoeffect.hs" afterPath="$PROJECT_DIR$/bominoeffect.hs" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dominoeffect.hs" afterPath="" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -173,12 +172,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1507807063276</updated>
-      <workItem from="1507807066661" duration="838000" />
+      <workItem from="1507807066661" duration="927000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="838000" />
+    <option name="totallyTimeSpent" value="927000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1680" y="-367" width="2560" height="1417" extended-state="6" />
