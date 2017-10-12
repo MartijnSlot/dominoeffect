@@ -5,26 +5,31 @@ class Board {
 
     private static final int WIDTH = 8;
     private static final int HEIGHT = 7;
-    private List<Integer> fields = new ArrayList<Integer>();
+    private List<Integer> fields = new ArrayList<>();
 
-    public Board (List<Integer> fields) {
+    public Board(List<Integer> fields) {
         this.fields = fields;
-    }
-
-    public int getField(int a) {
-        return fields.get(a);
     }
 
     public List<Integer> getFields() {
         return fields;
     }
 
-    public void replaceFieldField (int field, int value) {
-        fields.set(field, value);
+    public int getValue(int i) {
+        return fields.get(i);
     }
 
-    public static Board solve(Board board1, Board resultBoard, List<Bone> bones) {
+    public void replaceFieldValue(Board board, int i, int value) {
+        board.getFields().set(i, value);
+    }
 
-        return resultBoard;
+    public int findFree (Board board) {
+        return board.getFields().indexOf(0);
+    }
+
+    private Board replaceBone (int i, int newValue, Board board) {
+        board.getFields().set(i, newValue);
+        return board;
     }
 }
+
