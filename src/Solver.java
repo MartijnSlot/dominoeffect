@@ -2,7 +2,7 @@ import java.util.List;
 
 public class Solver {
 
-    public static int findBoneID(BonePos p, List<Bone> bones) {
+    private static int findBoneID(BonePos p, List<Bone> bones) {
         int boneId = 0;
         for (int a = 0; a == bones.size() - 1; a++) {
             if ((bones.get(a).getPip1() == p.getN1() && bones.get(a).getPip2() == p.getN2()) || (bones.get(a).getPip1() == p.getN2() && bones.get(a).getPip2() == p.getN1())) {
@@ -12,12 +12,12 @@ public class Solver {
         return boneId;
     }
 
-    public static List<Bone> removeItem(int boneId, List<Bone> bones) {
+    private static List<Bone> removeItem(int boneId, List<Bone> bones) {
         bones.remove(boneId);
         return bones;
     }
 
-    public static int getBoneValue(List<Bone> bones, Board inp, Board out) {
+    private static int getBoneValue(List<Bone> bones, Board inp, Board out) {
         List<BonePos> freemoves = Board.getFreeMoves(out);
         switch (freemoves.size()) {
             case 1:
