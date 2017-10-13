@@ -15,20 +15,21 @@ class Board {
         return fields;
     }
 
-    private int getValue(int i) {
-        return fields.get(i);
-    }
-
-    static void replaceValue(Board resultBoard, int i, int value) {
-        resultBoard.getFields().set(i, value);
+    //map BonePos p to actual values on the inputboard
+    List<Integer> getValue(BonePos p) {
+        List<Integer> boneValues = new ArrayList<>();
+        boneValues.add(fields.get(p.getN1()));
+        boneValues.add(fields.get(p.getN2()));
+        return boneValues;
     }
 
     private static int findFree(Board resultBoard) {
         return resultBoard.getFields().indexOf(0);
     }
 
-    static Board replaceBone(int i, int newValue, Board resultBoard) {
-        resultBoard.getFields().set(i, newValue);
+    static Board replaceBone(BonePos p, int boneValue, Board resultBoard) {
+        resultBoard.getFields().set(p.getN1(), boneValue);
+        resultBoard.getFields().set(p.getN2(), boneValue);
         return resultBoard;
     }
 
@@ -48,7 +49,7 @@ class Board {
 
     private static List<BonePos> checkMoves(List<BonePos> moves, Board resultBoard) {
         for (int i = 0; i < moves.size(); i++) {
-            if (resultBoard.getValue(moves.get(i).getN1()) != 0 && resultBoard.getValue(moves.get(i).getN2()) != 0) {
+            if (getValue(moves.get(i).getN1()) != 0 && getValue(moves.get(i).getN2()) != 0) {
                 moves.remove(i);
             }
         }

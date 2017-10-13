@@ -37,9 +37,11 @@ public class Main {
 
         Board finalBoard = Solver.solve(inp, out, bones);
 
-        input1.remove(0);
+        System.out.println(input1.get(1));
 
 //        output1.toString();
+
+
     }
 
 }
