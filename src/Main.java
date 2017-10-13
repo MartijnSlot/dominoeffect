@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Main {
@@ -20,9 +19,6 @@ public class Main {
             output1.add(0);
         }
 
-        Board inp = new Board(input1);
-        Board out = new Board(output1);
-
         List<Bone> bones = new ArrayList<>();
             bones.add(new Bone(0, 0, 1)); bones.add(new Bone(0, 1, 2)); bones.add(new Bone(0, 2, 3));
             bones.add(new Bone(0, 3, 4)); bones.add(new Bone(0, 4, 5)); bones.add(new Bone(0, 5, 6));
@@ -35,12 +31,22 @@ public class Main {
             bones.add(new Bone(4, 6, 25)); bones.add(new Bone(5, 5, 26)); bones.add(new Bone(5, 6, 27));
             bones.add(new Bone(6, 6, 28));
 
-        Board finalBoard = Solver.solve(inp, out, bones);
+        List<Integer> input2 = new ArrayList<>();
+        input2.add(1); input2.add(0); input2.add(0); input2.add(0);
 
-        System.out.println(input1.get(1));
+        List<Integer> output2 = new ArrayList<>();
+        for (int i = 1; i <= input2.size(); i++) {
+            output2.add(0);
+        }
 
-//        output1.toString();
+        List<Bone> bones2 = new ArrayList<>();
+        bones2.add(new Bone(0, 0, 1)); bones2.add(new Bone(0, 1, 2));
 
+        Board inp = new Board(input2);
+        Board out = new Board(output2);
+
+        System.out.println("input: \n" + inp.toString());
+        Solver.solve(inp, out, bones2);
 
     }
 

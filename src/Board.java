@@ -3,8 +3,8 @@ import java.util.List;
 
 class Board {
 
-    private static final int WIDTH = 8;
-    private static final int HEIGHT = 7;
+    private static final int WIDTH = 2;
+    private static final int HEIGHT = 2;
     private List<Integer> fields = new ArrayList<>();
 
     Board(List<Integer> fields) {
@@ -56,8 +56,26 @@ class Board {
         return moves;
     }
 
+    static Board deepCopy(Board board) {
+        List<Integer> oldCopy = board.getFields();
+        List<Integer> arrayCopy = new ArrayList<>();
+        for (Integer oldCopyElement : oldCopy) {
+            arrayCopy.add(new Integer(oldCopyElement));
+        }
+        return new Board(arrayCopy);
+    }
+
     static List<BonePos> getFreeMoves(Board resultBoard) {
         return moves(findFree(resultBoard), resultBoard);
+    }
+
+    public String toString(){
+        String grid= "";
+        for(int i=1; i <= WIDTH * HEIGHT; i++){
+                grid += (fields.get(i - 1) + " ");
+        }
+        grid += "\n";
+        return grid;
     }
 }
 
