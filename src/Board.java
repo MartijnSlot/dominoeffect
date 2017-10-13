@@ -16,10 +16,10 @@ class Board {
     }
 
     //map BonePos p to actual values on the inputboard
-    List<Integer> getValue(BonePos p) {
+    static List<Integer> getValue(BonePos p, Board inputboard) {
         List<Integer> boneValues = new ArrayList<>();
-        boneValues.add(fields.get(p.getN1()));
-        boneValues.add(fields.get(p.getN2()));
+        boneValues.add(inputboard.getFields().get(p.getN1()));
+        boneValues.add(inputboard.getFields().get(p.getN2()));
         return boneValues;
     }
 
@@ -49,7 +49,7 @@ class Board {
 
     private static List<BonePos> checkMoves(List<BonePos> moves, Board resultBoard) {
         for (int i = 0; i < moves.size(); i++) {
-            if (getValue(moves.get(i).getN1()) != 0 && getValue(moves.get(i).getN2()) != 0) {
+            if (getValue(moves.get(i), resultBoard).get(0) != 0 && getValue(moves.get(i), resultBoard).get(1) != 0) {
                 moves.remove(i);
             }
         }
