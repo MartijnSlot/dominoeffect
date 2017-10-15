@@ -11,10 +11,6 @@ class Board {
         this.fields = fields;
     }
 
-    private List<Integer> getFields() {
-        return fields;
-    }
-
     //map BonePos p to actual values on the inputboard
     static List<Integer> getValue(BonePos p, Board inputboard) {
         List<Integer> boneValues = new ArrayList<>();
@@ -69,12 +65,18 @@ class Board {
         return moves(findFree(resultBoard), resultBoard);
     }
 
-    public String toString(){
-        String grid= "";
-        for(int i = 0; i < WIDTH * HEIGHT; i++){
-                grid += (fields.get(i) + " ");
+    private List<Integer> getFields() {
+        return fields;
+    }
+
+    public String toString() {
+        String grid = "";
+        for (int i = 0; i < HEIGHT; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                grid += (fields.get(j + i*WIDTH) + " ");
+            }
+            grid += "\n";
         }
-        grid += "\n";
         return grid;
     }
 }

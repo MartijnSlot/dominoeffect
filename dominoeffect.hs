@@ -14,6 +14,9 @@ width = 8
 inp :: [Int]
 inp = [4,2,5,2,6,3,5,4,5,0,4,3,1,4,1,1,1,2,3,0,2,2,2,2,1,4,0,1,3,5,6,5,4,0,6,0,3,6,6,5,4,0,1,6,4,0,3,0,6,5,3,6,2,1,5,3]
 
+inp1 :: [Int]
+inp1 = [5,4,3,6,5,3,4,6,0,6,0,1,2,3,1,1,3,2,6,5,0,4,2,0,5,3,6,2,3,2,0,6,4,0,4,1,0,0,4,1,5,2,2,4,4,1,6,5,5,5,3,6,1,2,3,1]
+
 out :: [Int]
 out = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
@@ -73,8 +76,8 @@ solve inp out st  | boneValue1 /= 0 && boneValue2 /= 0 = solve inp replace1 (rem
                      boneValue2 = if length freemoves < 2 then 0 else findBoneValue (getValue (last freemoves) inp) st
                      freemoves  = moves (findFree out) out
 
-solver :: Grid
-solver = chop (length out) (solve inp out st)
+solver :: Int -> Grid
+solver a = chop (length out) (solve (if a == 1 then inp else inp1) out st)
 
 --IO GEBEUREN
 
