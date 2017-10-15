@@ -73,7 +73,9 @@ class Board {
         String grid = "";
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
-                grid += (fields.get(j + i*WIDTH) + " ");
+                int a = fields.get(j + i*WIDTH);
+                String b = (a < 10) ? (b = (a + "  ")) : (b = (a + " "));
+                grid += (b);
             }
             grid += "\n";
         }

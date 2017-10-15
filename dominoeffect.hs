@@ -1,6 +1,7 @@
 import Data.List
 import Data.Maybe
 import System.IO
+import Data.List.Split
 
 type Bone               = ((Int, Int), Int)
 type Grid               = [[Int]]
@@ -59,9 +60,9 @@ moves n xs | (n + 1) `mod` width == 0          = checkMoves [(n, (n + width))] x
 checkMoves :: [(Int,Int)] -> [Int] -> [(Int,Int)]
 checkMoves xs ys = [a | a <- xs, getValue a ys == (0,0)]
 
-chop :: Int -> [a] -> [[a]] --for visual representation
-chop n [] = []
-chop n xs = take n xs : chop n (drop n xs)
+chop' :: Int -> [a] -> [[a]] --for visual representation
+chop' n [] = []
+chop' n xs = take n xs : chop' n (drop n xs)
 
 solve :: [Int] -> [Int] -> [Bone] -> [Int]
 solve inp out []                                       = out
@@ -77,23 +78,26 @@ solve inp out st  | boneValue1 /= 0 && boneValue2 /= 0 = solve inp replace1 (rem
                      freemoves  = moves (findFree out) out
 
 solver :: Int -> Grid
-solver a = chop (length out) (solve (if a == 1 then inp else inp1) out st)
+solver a = chop' (length out) (solve (if a == 1 then inp else inp1) out st)
 
 --IO GEBEUREN
 
 putGrid :: Grid -> IO()
-putGrid = putStrLn . insert17CharNewLine . concat . concat . map showRow
+putGrid = putStrLn . insertNewLine (3*width) . concat . concat . map showRow
+
+putGrid3 :: Grid -> [[String]]
+putGrid3 = map showRow
 
 showRow :: [Int] -> [String]
 showRow = interleave space . map show
           where
              space = " "
 
-insert17CharNewLine :: [Char] -> [Char]
-insert17CharNewLine xs | length xs < 8 = xs
-                       | otherwise     = take 17 xs ++ "\n" ++ insert17CharNewLine (drop 17 xs)
+insertNewLine :: Int -> [Char] -> [Char]
+insertNewLine i xs | length xs < i = xs
+                   | otherwise     = take i xs ++ "\n" ++ insertNewLine i (drop i xs)
 
 interleave :: a -> [a] -> [a]
-interleave x [] = []
-interleave x [y] = [y]
+interleave x []     = []
+interleave x [y]    = [y]
 interleave x (y:ys) = y : x : interleave x ys
