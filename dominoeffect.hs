@@ -44,7 +44,7 @@ getValue (a,b) xs = ((xs !! a), (xs !! b))
 removeBone :: Int -> [Bone] -> [Bone] -- remove bones from bonelist
 removeBone n xs = [a | a <- xs, snd a /= n]
 
-replaceBone :: Int -> Int -> [Int] -> [Int] -- replace bone on board
+replaceBone :: Int -> Int -> [Int] -> [Int] -- replace bone on resultboard
 replaceBone index newVal (x:xs) | index == 0 = newVal:xs
                                 | otherwise = x:replaceBone (index - 1) newVal xs
 
