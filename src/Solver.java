@@ -1,11 +1,17 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * solver class for the domino effect
+ */
 public class Solver {
 
     /**
-     get boneID from 2 indexes (BonePos) on inputboard
-     **/
+     * get BoneID from 2 values
+     * @param values 2 ints
+     * @param bones the list of available bones
+     * @return the number of the bone
+     */
     private static int findBoneID(List<Integer> values, List<Bone> bones) {
         int boneId = 0;
         for (int i = 0; i < bones.size(); i++) {
@@ -17,8 +23,11 @@ public class Solver {
     }
 
     /**
-     removes boneID from list of bones
-     **/
+     * removes a bone from the bone list
+     * @param boneId id of the bone to remove
+     * @param bones list of available bones
+     * @return a list of available bones except for the removed bone
+     */
     private static List<Bone> removeBone(int boneId, List<Bone> bones) {
         if (bones.size() != 0) {
             bones.removeIf(bone -> bone.getId() == boneId); // #tochfunctioneel!
@@ -26,8 +35,14 @@ public class Solver {
         return bones;
     }
 
+    /**
+     * Solver method for the domino effect
+     * @param board, inputboard
+     * @param resultBoard, resultboard
+     * @param bones, available bones
+     * @return the resultboard if correct, null if no solution is possible
+     */
     static Board solve(Board board, Board resultBoard, List<Bone> bones) {
-//        System.out.println(resultBoard.toString()); //check
 
         Boolean solved = false;
 
@@ -56,10 +71,8 @@ public class Solver {
             resultBoard2 = Board.replaceBone(freemoves.get(1), boneValue2, resultBoard2);
             bones2 = removeBone(boneValue2, bones2);
 
-            if (!solved) {
-                solve(board, resultBoard1, bones1);
-                solve(board, resultBoard2, bones2);
-            }
+            solve(board, resultBoard1, bones1);
+            solve(board, resultBoard2, bones2);
         }
 
         if (freemoves.size() == 1 && freemoves.get(0) != null) {
@@ -67,9 +80,7 @@ public class Solver {
             int boneValue3 = findBoneID(values3, bones);
             Board resultBoard3 = Board.deepCopy(Board.replaceBone(freemoves.get(0), boneValue3, resultBoard));
             List<Bone> bones3 = deepCopyBones(removeBone(boneValue3, bones));
-            if (!solved) {
-                solve(board, resultBoard3, bones3);
-            }
+            solve(board, resultBoard3, bones3);
         }
 
         if (freemoves.size() == 2 && freemoves.get(0) == null && freemoves.get(0) != null) {
@@ -77,13 +88,16 @@ public class Solver {
             int boneValue4 = findBoneID(values4, bones);
             Board resultBoard4 = Board.deepCopy(Board.replaceBone(freemoves.get(1), boneValue4, resultBoard));
             List<Bone> bones4 = deepCopyBones(removeBone(boneValue4, bones));
-            if (!solved) {
-                solve(board, resultBoard4, bones4);
-            }
+            solve(board, resultBoard4, bones4);
         }
         return null;
     }
 
+    /**
+     * deep copies the bone list
+     * @param bones
+     * @return bones
+     */
     private static List<Bone> deepCopyBones(List<Bone> bones) {
         List<Bone> boner = new ArrayList<>();
         for (Bone bone : bones) {  //#tochfunctioneel!

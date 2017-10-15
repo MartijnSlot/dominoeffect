@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Main class for the domino effect
+ */
 public class Main {
 
     public static void main(String[] args) {

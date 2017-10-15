@@ -6,22 +6,22 @@ import Data.List.Split
 type Bone               = ((Int, Int), Int)
 type Grid               = [[Int]]
 
-cls :: IO ()
+cls :: IO () -- clear scn
 cls = putStr "\ESC[2J"
 
-width :: Int
+width :: Int -- width of board
 width = 8
 
-inp :: [Int]
+inp :: [Int] -- board 1
 inp = [4,2,5,2,6,3,5,4,5,0,4,3,1,4,1,1,1,2,3,0,2,2,2,2,1,4,0,1,3,5,6,5,4,0,6,0,3,6,6,5,4,0,1,6,4,0,3,0,6,5,3,6,2,1,5,3]
 
-inp1 :: [Int]
+inp1 :: [Int] -- board 2
 inp1 = [5,4,3,6,5,3,4,6,0,6,0,1,2,3,1,1,3,2,6,5,0,4,2,0,5,3,6,2,3,2,0,6,4,0,4,1,0,0,4,1,5,2,2,4,4,1,6,5,5,5,3,6,1,2,3,1]
 
 out :: [Int]
 out = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
-st :: [Bone]
+st :: [Bone] -- Bone collection
 st = [((0,0),1), ((0,1),2), ((0,2),3), ((0,3),4), ((0,4),5), ((0,5),6), ((0,6),7),
       ((1,1),8), ((1,2),9), ((1,3),10), ((1,4),11), ((1,5),12), ((1,6),13),
       ((2,2),14), ((2,3),15), ((2,4),16), ((2,5),17), ((2,6),18),
@@ -33,7 +33,7 @@ st = [((0,0),1), ((0,1),2), ((0,2),3), ((0,3),4), ((0,4),5), ((0,5),6), ((0,6),7
 findFree :: [Int] -> Int -- find next free spot on resultmatrix
 findFree = findFree' 0
 
-findFree' :: Int -> [Int] -> Int
+findFree' :: Int -> [Int] -> Int -- helper function for findFree
 findFree' n (x:xs) | x == 0    = n
                    | otherwise = findFree' (n+1) xs
 
@@ -57,14 +57,14 @@ moves n xs | (n + 1) `mod` width == 0          = checkMoves [(n, (n + width))] x
            | (n) + width >= length xs          = checkMoves [(n, (n + 1))] xs
            | otherwise                         = checkMoves [(n, (n + 1)), (n, (n + width))] xs
 
-checkMoves :: [(Int,Int)] -> [Int] -> [(Int,Int)]
+checkMoves :: [(Int,Int)] -> [Int] -> [(Int,Int)] -- checks if a move is possible on the resultboard (if the spot is not already occupied)
 checkMoves xs ys = [a | a <- xs, getValue a ys == (0,0)]
 
-chop' :: Int -> [a] -> [[a]] --for visual representation
+chop' :: Int -> [a] -> [[a]] --for (poor) visual representation
 chop' n [] = []
 chop' n xs = take n xs : chop' n (drop n xs)
 
-solve :: [Int] -> [Int] -> [Bone] -> [Int]
+solve :: [Int] -> [Int] -> [Bone] -> [Int] --solver
 solve inp out []                                       = out
 solve inp out st  | boneValue1 /= 0 && boneValue2 /= 0 = solve inp replace1 (removeBone boneValue1 st) ++ solve inp replace2 (removeBone boneValue2 st)
                   | boneValue1 /= 0                    = solve inp replace1 (removeBone boneValue1 st)
@@ -77,16 +77,12 @@ solve inp out st  | boneValue1 /= 0 && boneValue2 /= 0 = solve inp replace1 (rem
                      boneValue2 = if length freemoves < 2 then 0 else findBoneValue (getValue (last freemoves) inp) st
                      freemoves  = moves (findFree out) out
 
-solver :: Int -> Grid
+solver :: Int -> Grid 
 solver a = chop' (length out) (solve (if a == 1 then inp else inp1) out st)
 
---IO GEBEUREN
-
+--IO , row allignment is slightly off
 putGrid :: Grid -> IO()
 putGrid = putStrLn . insertNewLine (3*width) . concat . concat . map showRow
-
-putGrid3 :: Grid -> [[String]]
-putGrid3 = map showRow
 
 showRow :: [Int] -> [String]
 showRow = interleave space . map show

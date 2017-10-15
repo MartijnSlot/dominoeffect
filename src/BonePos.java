@@ -1,3 +1,6 @@
+/**
+ * bone position class for domino effect
+ */
 public class BonePos {
 
     private int n1;

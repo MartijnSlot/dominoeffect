@@ -1,3 +1,6 @@
+/**
+ * domino effect Bone representation
+ */
 public class Bone {
 
     private final int pip1;
