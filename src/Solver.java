@@ -26,21 +26,14 @@ public class Solver {
         return bones;
     }
 
-//    /**
-//     get inputboard values that correspond to the freemoves of the outputboard
-//     **/
-//    private static List<Integer> getBoneValue(Board inp, BonePos bonePos) {
-//        //get available moves for the first 0 element in the outputboard
-//        //get the 2 sets of board position that correspond to the free moves.
-//        // if available moves = 0, then boneValue = 0
-//        return Board.getValue(bonePos, inp);
-//    }
-
     static Board solve(Board board, Board resultBoard, List<Bone> bones) {
 //        System.out.println(resultBoard.toString()); //check
 
+        Boolean solved = false;
+
         if (bones.size() == 0) {
             System.out.println("solution: \n" + resultBoard.toString());
+            solved = true;
             return resultBoard;
         }
 
@@ -63,8 +56,10 @@ public class Solver {
             resultBoard2 = Board.replaceBone(freemoves.get(1), boneValue2, resultBoard2);
             bones2 = removeBone(boneValue2, bones2);
 
-            solve(board, resultBoard1, bones1);
-            solve(board, resultBoard2, bones2);
+            if (!solved) {
+                solve(board, resultBoard1, bones1);
+                solve(board, resultBoard2, bones2);
+            }
         }
 
         if (freemoves.size() == 1 && freemoves.get(0) != null) {
@@ -72,7 +67,9 @@ public class Solver {
             int boneValue3 = findBoneID(values3, bones);
             Board resultBoard3 = Board.deepCopy(Board.replaceBone(freemoves.get(0), boneValue3, resultBoard));
             List<Bone> bones3 = deepCopyBones(removeBone(boneValue3, bones));
-            solve(board, resultBoard3, bones3);
+            if (!solved) {
+                solve(board, resultBoard3, bones3);
+            }
         }
 
         if (freemoves.size() == 2 && freemoves.get(0) == null && freemoves.get(0) != null) {
@@ -80,7 +77,9 @@ public class Solver {
             int boneValue4 = findBoneID(values4, bones);
             Board resultBoard4 = Board.deepCopy(Board.replaceBone(freemoves.get(1), boneValue4, resultBoard));
             List<Bone> bones4 = deepCopyBones(removeBone(boneValue4, bones));
-            solve(board, resultBoard4, bones4);
+            if (!solved) {
+                solve(board, resultBoard4, bones4);
+            }
         }
         return null;
     }

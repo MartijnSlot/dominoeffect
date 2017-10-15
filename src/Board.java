@@ -3,7 +3,7 @@ import java.util.List;
 
 class Board {
 
-    private static final int WIDTH = 2;
+    private static final int WIDTH = 3;
     private static final int HEIGHT = 2;
     private List<Integer> fields = new ArrayList<>();
 
@@ -71,8 +71,8 @@ class Board {
 
     public String toString(){
         String grid= "";
-        for(int i=1; i <= WIDTH * HEIGHT; i++){
-                grid += (fields.get(i - 1) + " ");
+        for(int i = 0; i < WIDTH * HEIGHT; i++){
+                grid += (fields.get(i) + " ");
         }
         grid += "\n";
         return grid;
